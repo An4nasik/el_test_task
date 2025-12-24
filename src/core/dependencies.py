@@ -10,5 +10,5 @@ def verify_api_key(x_api_key: str = Header(..., alias="X-API-Key")) -> None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key")
 
 
-def get_db(session: AsyncSession = Depends(get_session)) -> AsyncSession:
+def get_db(session: AsyncSession = Depends(get_session)) -> AsyncSession:  # noqa: B008
     return session
