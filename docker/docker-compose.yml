@@ -2,6 +2,12 @@ x-common-build: &common-build
   context: ..
   dockerfile: Dockerfile
 
+x-common-healthcheck: &common-healthcheck
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 10s
+
 services:
   postgres:
     image: postgres:15
@@ -13,36 +19,61 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ai_consultant"]
+      <<: *common-healthcheck
 
   rabbitmq:
     image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      <<: *common-healthcheck
 
   api:
     build: *common-build
     env_file: ../.env
+    environment:
+      POSTGRES_HOST: postgres
+      RABBITMQ_HOST: rabbitmq
     depends_on:
-      - postgres
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      <<: *common-healthcheck
+    restart: unless-stopped
 
   worker:
     build: *common-build
     env_file: ../.env
-    command: ["uvicorn", "src.worker.main:app", "--host", "0.0.0.0", "--port", "8001"]
+    environment:
+      POSTGRES_HOST: postgres
+      RABBITMQ_HOST: rabbitmq
+    command: ["python", "-m", "faststream", "run", "src.worker.main:app"]
     depends_on:
-      - api
-      - rabbitmq
+      api:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
 
   bot:
     build: *common-build
     env_file: ../.env
+    environment:
+      API_BASE_URL: http://api:8000
     command: ["python", "-m", "src.bot.main"]
     depends_on:
-      - api
+      api:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   pgdata:

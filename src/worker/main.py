@@ -1,6 +1,8 @@
 from faststream import FastStream
 from faststream.rabbit import RabbitRouter
 
+from src.core.logging import setup_logging
+from src.knowledge.loader import load_vectorstore
 from src.worker.broker import broker
 from src.worker.handlers import handle_audio, handle_text
 
@@ -8,16 +10,24 @@ router = RabbitRouter()
 
 
 @router.subscriber("ai.text", rpc=True)
-async def on_text(payload):
+async def on_text(payload: dict) -> str:
     return await handle_text(payload, None, None)
 
 
 @router.subscriber("ai.audio", rpc=True)
-async def on_audio(payload):
+async def on_audio(payload: dict) -> str:
     return await handle_audio(payload, None, None)
 
 
-app = FastStream(broker, router)
+broker.include_router(router)
+
+app = FastStream(broker)
+
+
+@app.on_startup
+async def on_startup():
+    setup_logging()
+    load_vectorstore()
 
 
 if __name__ == "__main__":
