@@ -47,8 +47,7 @@ COPY src /app/src
 COPY data /app/data
 
 # Install the package (no deps, they're already installed)
-RUN pip install --no-cache-dir uv \
-    && uv pip install --system --no-cache-dir --no-deps -e .
+RUN pip install --no-cache-dir --no-deps -e .
 
 # Non-root user for security
 RUN useradd --create-home --shell /bin/bash appuser \
