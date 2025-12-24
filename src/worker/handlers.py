@@ -3,9 +3,7 @@ from typing import Any
 
 from faststream import ContextRepo
 from faststream.rabbit import RabbitMessage
-from langchain_core.messages import AIMessage, HumanMessage
 
-from src.services.memory import add_message
 from src.services.rag import get_rag_chain
 from src.services.vision import describe_image
 
@@ -30,11 +28,8 @@ async def handle_text(payload: dict[str, Any], message: RabbitMessage, context: 
 
     question = _combine_context(text, image_desc)
 
-    chain = get_rag_chain(user_id)
-    answer = await chain.ainvoke(question)
-
-    add_message(user_id, HumanMessage(content=question))
-    add_message(user_id, AIMessage(content=answer))
+    chain = get_rag_chain()
+    answer = await chain.ainvoke({"question": question}, config={"configurable": {"session_id": user_id}})
     return answer
 
 
@@ -45,9 +40,6 @@ async def handle_audio(payload: dict[str, Any], message: RabbitMessage, context:
 
     question = _combine_context(text, image_desc)
 
-    chain = get_rag_chain(user_id)
-    answer = await chain.ainvoke(question)
-
-    add_message(user_id, HumanMessage(content=question))
-    add_message(user_id, AIMessage(content=answer))
+    chain = get_rag_chain()
+    answer = await chain.ainvoke({"question": question}, config={"configurable": {"session_id": user_id}})
     return answer
