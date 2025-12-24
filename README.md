@@ -3,19 +3,18 @@
 Простой RAG-консультант по книге с FastAPI, LangChain, OpenAI, FastStream (RabbitMQ), PostgreSQL и Telegram-ботом.
 
 ## Стек
-- Python 3.12, FastAPI
+- Python 3.11, FastAPI
 - LangChain + OpenAI (gpt-4o-mini + text-embedding-3-small)
 - FAISS для векторного поиска
 - FastStream + RabbitMQ
-- PostgreSQL + SQLAlchemy 2.x (async)
+- PostgreSQL + SQLAlchemy (async)
 - Aiogram 3
 - Whisper tiny локально для транскрибации
 
 ## Запуск локально (без Docker)
 ```bash
 python -m venv .venv
-.venv\Scripts\activate  # Windows
-source .venv/bin/activate  # Linux/Mac
+.venv\Scripts\activate
 pip install -e .
 uvicorn src.api.main:app --reload
 ```

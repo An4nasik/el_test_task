@@ -2,12 +2,9 @@ x-common-build: &common-build
   context: ..
   dockerfile: Dockerfile
 
-x-common-env: &common-env
-  env_file: ../.env
-
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:15
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -16,57 +13,36 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   api:
     build: *common-build
-    <<: *common-env
+    env_file: ../.env
     depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      - postgres
+      - rabbitmq
     ports:
       - "8000:8000"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   worker:
     build: *common-build
-    <<: *common-env
+    env_file: ../.env
     command: ["uvicorn", "src.worker.main:app", "--host", "0.0.0.0", "--port", "8001"]
     depends_on:
-      api:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      - api
+      - rabbitmq
 
   bot:
     build: *common-build
-    <<: *common-env
+    env_file: ../.env
     command: ["python", "-m", "src.bot.main"]
     depends_on:
-      api:
-        condition: service_healthy
+      - api
 
 volumes:
   pgdata:

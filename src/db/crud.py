@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from datetime import UTC, datetime
+from datetime import datetime
 
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,7 +9,7 @@ from src.db.models import Conversation, Message
 
 async def save_message(session: AsyncSession, user_id: str, role: str, content: str) -> Message:
     conversation = await _get_or_create_conversation(session, user_id)
-    message = Message(conversation_id=conversation.id, role=role, content=content, created_at=datetime.now(UTC))
+    message = Message(conversation_id=conversation.id, role=role, content=content, created_at=datetime.utcnow())
     session.add(message)
     await session.commit()
     await session.refresh(message)
@@ -41,7 +41,7 @@ async def _get_or_create_conversation(session: AsyncSession, user_id: str) -> Co
     conversation = result.scalar_one_or_none()
     if conversation:
         return conversation
-    conversation = Conversation(user_id=user_id, created_at=datetime.now(UTC))
+    conversation = Conversation(user_id=user_id, created_at=datetime.utcnow())
     session.add(conversation)
     await session.commit()
     await session.refresh(conversation)
