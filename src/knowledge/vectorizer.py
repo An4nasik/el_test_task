@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_openai import OpenAIEmbeddings
 
 from src.core.config import settings
 from src.knowledge.chunker import load_documents
@@ -11,8 +11,9 @@ def build_vectorstore(data_path: str | None = None, store_path: str | None = Non
     docs_path = data_path or settings.knowledge_path
     faiss_path = store_path or settings.vectorstore_path
     documents = load_documents(docs_path)
-    embeddings = OllamaEmbeddings(
+    embeddings = OpenAIEmbeddings(
         model=settings.ollama_embedding_model,
+        api_key=settings.ollama_api_key,
         base_url=settings.ollama_base_url,
     )
     vectorstore = FAISS.from_documents(documents, embeddings)

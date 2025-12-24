@@ -18,9 +18,9 @@ def load_vectorstore() -> FAISS:
         return _vectorstore
     path = Path(settings.vectorstore_path)
     embeddings = OpenAIEmbeddings(
-        model=settings.openai_embedding_model,
-        api_key=settings.openai_api_key,
-        base_url=settings.openai_base_url,
+        model=settings.ollama_embedding_model,
+        api_key=settings.ollama_api_key,
+        base_url=settings.ollama_base_url,
     )
     index_file = path / INDEX_FILE_NAME
     metadata_file = path / METADATA_FILE_NAME
