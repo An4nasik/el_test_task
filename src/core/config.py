@@ -30,6 +30,12 @@ class Settings(BaseSettings):
     openai_vision_model: str = "gpt-4o-mini"
     openai_embedding_model: str = "text-embedding-3-small"
 
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_api_key: str = "ollama"
+    ollama_chat_model: str = "llama3"
+    ollama_vision_model: str = "llava"
+    ollama_embedding_model: str = "nomic-embed-text"
+
     telegram_bot_token: str = ""
 
     whisper_model: str = "tiny"
