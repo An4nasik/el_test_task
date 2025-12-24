@@ -1,10 +1,11 @@
 # AI Book Consultant
 
-Простой RAG-консультант по книге с FastAPI, LangChain, OpenAI, FastStream (RabbitMQ), PostgreSQL и Telegram-ботом.
+Простой RAG-консультант по книге с FastAPI, LangChain, OpenRouter (облачные LLM модели), FastStream (RabbitMQ), PostgreSQL и Telegram-ботом.
 
 ## Стек
 - Python 3.11, FastAPI
-- LangChain + OpenAI (gpt-4o-mini + text-embedding-3-small)
+- LangChain + OpenRouter (облачные LLM модели: meta-llama/llama-3.1-8b-instruct, meta-llama/llama-3.2-11b-vision-instruct)
+- OpenAI Embeddings (text-embedding-3-small) для векторизации
 - FAISS для векторного поиска
 - FastStream + RabbitMQ
 - PostgreSQL + SQLAlchemy (async)
@@ -29,7 +30,8 @@ docker compose up --build
 ## Переменные окружения (.env)
 Смотри `.env.example`. Важные:
 - `API_AUTH_KEY` — ключ для X-API-Key
-- `OPENAI_API_KEY` — ключ OpenAI
+- `OLLAMA_API_KEY` — ключ OpenRouter для облачных LLM моделей (чат и vision)
+- `OPENAI_API_KEY` — ключ OpenAI для embeddings
 - `TELEGRAM_BOT_TOKEN` — токен бота
 - `RABBITMQ_URL`, `DATABASE_URL` при необходимости, иначе берутся из host/port
 
