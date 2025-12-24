@@ -1,4 +1,5 @@
 import base64
+import logging
 
 from aiogram import Router, types
 from aiogram.filters import Command
@@ -6,6 +7,7 @@ from aiogram.filters import Command
 from src.bot.api_client import client_singleton
 
 router = Router()
+logger = logging.getLogger(__name__)
 
 
 @router.message(Command("start"))
@@ -28,8 +30,9 @@ async def cmd_clear(message: types.Message):
     try:
         await client_singleton.clear(user_id)
         await message.answer("✅ История диалога очищена.")
-    except Exception as e:
-        await message.answer(f"❌ Ошибка: {e}")
+    except Exception:
+        logger.exception("Failed to clear history for user %s", user_id)
+        await message.answer("❌ Не удалось очистить историю. Попробуйте позже.")
 
 
 @router.message()
@@ -75,6 +78,7 @@ async def handle_message(message: types.Message):
 
         await message.answer("Поддерживаю текст, голосовые сообщения, аудиофайлы и фото.")
 
-    except Exception as e:
-        await message.answer(f"❌ Ошибка при обработке запроса: {e}")
+    except Exception:
+        logger.exception("Failed to process message for user %s", user_id)
+        await message.answer("❌ Произошла ошибка при обработке запроса. Попробуйте позже.")
 

@@ -1,3 +1,5 @@
+import asyncio
+
 from faststream import FastStream
 from faststream.rabbit import RabbitRouter
 
@@ -27,7 +29,8 @@ app = FastStream(broker)
 @app.on_startup
 async def on_startup():
     setup_logging()
-    load_vectorstore()
+    # Run synchronous vectorstore loading in a thread to avoid blocking
+    await asyncio.to_thread(load_vectorstore)
 
 
 if __name__ == "__main__":
