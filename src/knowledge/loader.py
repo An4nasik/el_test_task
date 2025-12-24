@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 
@@ -17,11 +18,26 @@ def load_vectorstore() -> FAISS:
     if _vectorstore:
         return _vectorstore
     path = Path(settings.vectorstore_path)
-    embeddings = OpenAIEmbeddings(
-        model=settings.openai_embedding_model,
-        api_key=settings.openai_api_key,
-        base_url=settings.openai_base_url,
-    )
+
+    if settings.use_local_embeddings:
+        embeddings = HuggingFaceEmbeddings(model_name=settings.local_embedding_model)
+    else:
+        api_key = settings.openai_api_key
+        base_url = settings.openai_base_url
+        model = settings.openai_embedding_model
+
+        # Fallback to Ollama/OpenRouter if OpenAI key is not set or is a placeholder
+        if not api_key or api_key == "your_openai_api_key":
+            api_key = settings.ollama_api_key
+            base_url = settings.ollama_base_url
+            model = settings.ollama_embedding_model
+
+        embeddings = OpenAIEmbeddings(
+            model=model,
+            api_key=api_key,
+            base_url=base_url,
+        )
+
     index_file = path / INDEX_FILE_NAME
     metadata_file = path / METADATA_FILE_NAME
     if path.exists() and index_file.exists() and metadata_file.exists():

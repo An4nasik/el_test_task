@@ -21,8 +21,6 @@ async def lifespan(app: FastAPI):
     clear_all_history()
 
 
-
-
 def create_app() -> FastAPI:
     app = FastAPI(title="AI Book Consultant", lifespan=lifespan)
     app.include_router(api_router)
@@ -35,3 +33,7 @@ app = create_app()
 async def add_process_time_header(request: Request, call_next):
     response = await call_next(request)
     return response
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

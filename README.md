@@ -75,36 +75,39 @@ docker compose up --build
 
 ### Локальный запуск (для разработки)
 
-1. Установите зависимости:
-```bash
+1. Установите зависимости и активируйте виртуальное окружение (PowerShell):
+```powershell
 python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# или .venv\Scripts\activate  # Windows
+.\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
 ```
 
-2. Запустите PostgreSQL и RabbitMQ:
-```bash
-# Используйте docker-compose только для инфраструктуры
+2. Запустите инфраструктуру (Postgres + RabbitMQ) через docker-compose:
+```powershell
 cd docker
 docker compose up postgres rabbitmq -d
 cd ..
 ```
 
-3. Запустите API:
-```bash
+3. Два варианта запуска приложения:
+
+- Ручной (по шагам):
+```powershell
+# Запустить API
 uvicorn src.api.main:app --reload
-```
-
-4. В другом терминале запустите Worker:
-```bash
+# В другом терминале запустить воркер
 python -m faststream run src.worker.main:app
-```
-
-5. (Опционально) Запустите бота:
-```bash
+# (опционально) запустить бота
 python -m src.bot.main
 ```
+
+- Быстрый запуск всего стека через `run_local.py` (одной командой):
+```powershell
+# Запускает infra (docker-compose postgres + rabbitmq) и поднимает API, Worker и Bot
+python run_local.py
+```
+
+> Примечание: `run_local.py` использует Docker Compose для поднятия инфраструктуры и затем запускает локальные сервисы в отдельных процессах. Поддерживается Windows PowerShell и Unix-подобные терминалы.
 
 ## Переменные окружения
 
@@ -141,9 +144,11 @@ python -m src.bot.main
 {
   "user_id": "123",
   "text": "Кто такой Воланд?",
-  "image_base64": "..."  // опционально
+  "image_base64": "..."
 }
 ```
+
+`image_base64` — опционально, строка в base64 при передаче изображения.
 
 **Ответ:**
 ```json
@@ -161,9 +166,11 @@ python -m src.bot.main
 {
   "user_id": "123",
   "audio_base64": "...",
-  "image_base64": "..."  // опционально
+  "image_base64": "..."
 }
 ```
+
+`image_base64` — опционально, строка в base64 при передаче изображения.
 
 **Ответ:**
 ```json

@@ -1,8 +1,6 @@
 import base64
 from typing import Any
 
-from faststream import ContextRepo
-from faststream.rabbit import RabbitMessage
 
 from src.services.rag import get_rag_chain
 from src.services.vision import describe_image
@@ -21,7 +19,7 @@ def _combine_context(text: str, image_desc: str) -> str:
     return text
 
 
-async def handle_text(payload: dict[str, Any], message: RabbitMessage, context: ContextRepo) -> str:
+async def handle_text(payload) -> str:
     user_id = payload["user_id"]
     text = payload.get("text", "")
     image_desc = payload.get("image_desc", "")
@@ -33,7 +31,7 @@ async def handle_text(payload: dict[str, Any], message: RabbitMessage, context: 
     return answer
 
 
-async def handle_audio(payload: dict[str, Any], message: RabbitMessage, context: ContextRepo) -> str:
+async def handle_audio(payload: dict[str, Any]) -> str:
     user_id = payload["user_id"]
     text = payload.get("text", "")
     image_desc = payload.get("image_desc", "")

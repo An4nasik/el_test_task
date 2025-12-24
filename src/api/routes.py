@@ -18,12 +18,14 @@ router = APIRouter(prefix="/api/v1", dependencies=[Depends(verify_api_key)])
 
 
 def _extract_image(image_base64: str | None) -> bytes | None:
-    if not image_base64:
+    # Пропускаем None, пустые строки и placeholder значения
+    if not image_base64 or image_base64.strip() == "" or image_base64 == "string":
         return None
     try:
         return base64.b64decode(image_base64)
-    except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=400, detail="Invalid image base64") from exc
+    except Exception:  # noqa: BLE001
+        # Если не удалось декодировать - просто игнорируем изображение
+        return None
 
 
 async def _maybe_describe_image(image_base64: str | None) -> str:

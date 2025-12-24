@@ -11,14 +11,14 @@ from src.worker.handlers import handle_audio, handle_text
 router = RabbitRouter()
 
 
-@router.subscriber("ai.text", rpc=True)
+@router.subscriber("ai.text")
 async def on_text(payload: dict) -> str:
-    return await handle_text(payload, None, None)
+    return await handle_text(payload)
 
 
-@router.subscriber("ai.audio", rpc=True)
+@router.subscriber("ai.audio")
 async def on_audio(payload: dict) -> str:
-    return await handle_audio(payload, None, None)
+    return await handle_audio(payload)
 
 
 broker.include_router(router)
