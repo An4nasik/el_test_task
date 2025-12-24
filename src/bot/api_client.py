@@ -1,4 +1,3 @@
-from typing import Optional
 
 import httpx
 
@@ -14,7 +13,7 @@ class AIConsultantClient:
     async def close(self) -> None:
         await self._client.aclose()
 
-    async def ask_text(self, user_id: str, text: str, image_base64: Optional[str] = None) -> str:
+    async def ask_text(self, user_id: str, text: str, image_base64: str | None = None) -> str:
         payload = {"user_id": user_id, "text": text, "image_base64": image_base64}
         resp = await self._client.post(
             f"{self.base_url}/api/v1/ask/text",
@@ -24,7 +23,7 @@ class AIConsultantClient:
         resp.raise_for_status()
         return resp.json()["response"]
 
-    async def ask_audio(self, user_id: str, audio_base64: str, image_base64: Optional[str] = None) -> str:
+    async def ask_audio(self, user_id: str, audio_base64: str, image_base64: str | None = None) -> str:
         payload = {"user_id": user_id, "audio_base64": audio_base64, "image_base64": image_base64}
         resp = await self._client.post(
             f"{self.base_url}/api/v1/ask/audio",

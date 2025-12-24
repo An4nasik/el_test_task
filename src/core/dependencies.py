@@ -12,4 +12,3 @@ def verify_api_key(x_api_key: str = Header(..., alias="X-API-Key")) -> None:
 
 def get_db(session: AsyncSession = Depends(get_session)) -> AsyncSession:
     return session
-

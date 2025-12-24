@@ -1,8 +1,8 @@
-from typing import Dict
-from langchain_core.chat_history import InMemoryChatMessageHistory, BaseChatMessageHistory
+from langchain_core.chat_history import BaseChatMessageHistory, InMemoryChatMessageHistory
 from langchain_core.messages import BaseMessage
+from langchain_core.runnables import RunnableLambda
 
-_history_store: Dict[str, InMemoryChatMessageHistory] = {}
+_history_store: dict[str, InMemoryChatMessageHistory] = {}
 
 
 def get_history(session_id: str) -> BaseChatMessageHistory:
@@ -20,3 +20,12 @@ def clear_history(session_id: str) -> None:
 def add_message(session_id: str, message: BaseMessage) -> None:
     history = get_history(session_id)
     history.add_message(message)
+
+
+def get_memory(session_id: str):
+    # Заглушка-проходной раннабл: не ломает конвейер, можно заменить на RunnableWithMessageHistory при необходимости.
+    return RunnableLambda(lambda x: x)
+
+
+def clear_all_history() -> None:
+    _history_store.clear()

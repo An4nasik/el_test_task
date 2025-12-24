@@ -1,7 +1,7 @@
 import base64
+
 from aiogram import Router, types
 from aiogram.filters import Command
-from aiogram.types import FSInputFile
 
 from src.bot.api_client import client_singleton
 

@@ -1,6 +1,8 @@
 from pathlib import Path
+
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
+
 from src.core.config import settings
 from src.knowledge.chunker import load_documents
 

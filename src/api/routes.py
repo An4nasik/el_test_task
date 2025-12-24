@@ -5,10 +5,12 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException
 
 from src.api.auth import verify_api_key
+from src.api.rpc import rpc_audio, rpc_text
 from src.api.schemas import AIResponse, AudioRequest, ClearRequest, TextRequest
 from src.core.dependencies import get_db
 from src.db import crud
-from src.api.rpc import rpc_text, rpc_audio
+from src.services.transcription import transcribe_audio
+from src.services.vision import describe_image
 
 router = APIRouter(prefix="/api/v1", dependencies=[Depends(verify_api_key)])
 

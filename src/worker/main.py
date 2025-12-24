@@ -2,7 +2,7 @@ from faststream import FastStream
 from faststream.rabbit import RabbitRouter
 
 from src.worker.broker import broker
-from src.worker.handlers import handle_text, handle_audio
+from src.worker.handlers import handle_audio, handle_text
 
 router = RabbitRouter()
 

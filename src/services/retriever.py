@@ -1,4 +1,5 @@
 from langchain_community.vectorstores import FAISS
+
 from src.knowledge.loader import load_vectorstore
 
 

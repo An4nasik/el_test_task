@@ -1,15 +1,17 @@
-FROM python:3.11-slim AS base
+FROM python:3.12-slim AS base
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PATH="/usr/local/bin:${PATH}"
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY pyproject.toml /app/
-RUN pip install  uv \
-    && uv pip install --system  fastapi uvicorn[standard] \
-    && uv pip install --system  .
+COPY pyproject.toml uv.lock /app/
+RUN pip install --no-cache-dir uv \
+    && uv pip install --system --no-cache-dir --frozen .
 
 COPY src /app/src
 COPY data /app/data

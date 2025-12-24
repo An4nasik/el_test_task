@@ -1,13 +1,13 @@
 import base64
-from typing import Any, Dict
+from typing import Any
 
 from faststream import ContextRepo
 from faststream.rabbit import RabbitMessage
+from langchain_core.messages import AIMessage, HumanMessage
 
+from src.services.memory import add_message
 from src.services.rag import get_rag_chain
 from src.services.vision import describe_image
-from src.services.memory import add_message
-from langchain_core.messages import HumanMessage, AIMessage
 
 
 async def _maybe_describe_image(image_base64: str | None) -> str:
@@ -23,7 +23,7 @@ def _combine_context(text: str, image_desc: str) -> str:
     return text
 
 
-async def handle_text(payload: Dict[str, Any], message: RabbitMessage, context: ContextRepo) -> str:
+async def handle_text(payload: dict[str, Any], message: RabbitMessage, context: ContextRepo) -> str:
     user_id = payload["user_id"]
     text = payload.get("text", "")
     image_desc = payload.get("image_desc", "")
@@ -38,7 +38,7 @@ async def handle_text(payload: Dict[str, Any], message: RabbitMessage, context: 
     return answer
 
 
-async def handle_audio(payload: Dict[str, Any], message: RabbitMessage, context: ContextRepo) -> str:
+async def handle_audio(payload: dict[str, Any], message: RabbitMessage, context: ContextRepo) -> str:
     user_id = payload["user_id"]
     text = payload.get("text", "")
     image_desc = payload.get("image_desc", "")

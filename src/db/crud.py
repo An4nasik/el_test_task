@@ -1,7 +1,7 @@
+from collections.abc import Sequence
 from datetime import datetime
-from typing import Sequence
 
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.models import Conversation, Message
