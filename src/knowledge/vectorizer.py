@@ -12,9 +12,9 @@ def build_vectorstore(data_path: str | None = None, store_path: str | None = Non
     faiss_path = store_path or settings.vectorstore_path
     documents = load_documents(docs_path)
     embeddings = OpenAIEmbeddings(
-        model=settings.ollama_embedding_model,
-        api_key=settings.ollama_api_key,
-        base_url=settings.ollama_base_url,
+        model=settings.openai_embedding_model,
+        api_key=settings.openai_api_key,
+        base_url=settings.openai_base_url,
     )
     vectorstore = FAISS.from_documents(documents, embeddings)
     Path(faiss_path).mkdir(parents=True, exist_ok=True)

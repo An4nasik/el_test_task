@@ -34,7 +34,6 @@ class Settings(BaseSettings):
     ollama_api_key: str = ""
     ollama_chat_model: str = "meta-llama/llama-3.1-8b-instruct:free"
     ollama_vision_model: str = "meta-llama/llama-3.2-11b-vision-instruct:free"
-    ollama_embedding_model: str = "text-embedding-3-small"
 
     telegram_bot_token: str = ""
 
