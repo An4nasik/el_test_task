@@ -24,11 +24,11 @@ class Settings(BaseSettings):
     rabbitmq_password: str = "guest"
     rabbitmq_url: str = ""
 
-    ollama_base_url: str = "https://ollama.com"
-    ollama_api_key: str = ""
-    ollama_chat_model: str = "gpt-oss:120b-cloud"
-    ollama_vision_model: str = "qwen3-vl:2b-cloud"
-    ollama_embedding_model: str = "all-minilm"
+    openai_api_key: str = ""
+    openai_base_url: str = "https://api.openai.com/v1"
+    openai_chat_model: str = "gpt-4o-mini"
+    openai_vision_model: str = "gpt-4o-mini"
+    openai_embedding_model: str = "text-embedding-3-small"
 
     telegram_bot_token: str = ""
 

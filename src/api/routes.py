@@ -9,6 +9,7 @@ from src.api.rpc import rpc_audio, rpc_text
 from src.api.schemas import AIResponse, AudioRequest, ClearRequest, TextRequest
 from src.core.dependencies import get_db
 from src.db import crud
+from src.services.memory import clear_history
 from src.services.transcription import transcribe_audio
 from src.services.vision import describe_image
 
@@ -38,7 +39,7 @@ def _combine_context(text: str, image_desc: str) -> str:
 
 
 @router.post("/ask/text", response_model=AIResponse)
-async def ask_text(payload: TextRequest, session=Depends(get_db)) -> AIResponse:
+async def ask_text(payload: TextRequest, session=Depends(get_db)) -> AIResponse:  # noqa: B008
     image_desc = _maybe_describe_image(payload.image_base64)
     question = _combine_context(payload.text, image_desc)
 
@@ -50,7 +51,7 @@ async def ask_text(payload: TextRequest, session=Depends(get_db)) -> AIResponse:
 
 
 @router.post("/ask/audio", response_model=AIResponse)
-async def ask_audio(payload: AudioRequest, session=Depends(get_db)) -> AIResponse:
+async def ask_audio(payload: AudioRequest, session=Depends(get_db)) -> AIResponse:  # noqa: B008
     try:
         audio_bytes = base64.b64decode(payload.audio_base64)
     except Exception as exc:  # noqa: BLE001
@@ -74,6 +75,7 @@ async def ask_audio(payload: AudioRequest, session=Depends(get_db)) -> AIRespons
 
 
 @router.post("/clear")
-async def clear_memory(payload: ClearRequest, session=Depends(get_db)) -> dict:
+async def clear_memory(payload: ClearRequest, session=Depends(get_db)) -> dict:  # noqa: B008
     await crud.clear_conversation(session, payload.user_id)
+    clear_history(payload.user_id)
     return {"status": "ok"}

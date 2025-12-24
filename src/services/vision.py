@@ -1,16 +1,17 @@
 import base64
 
 from langchain_core.messages import HumanMessage
-from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 
 from src.core.config import settings
 
 
 def describe_image(image_bytes: bytes) -> str:
     b64 = base64.b64encode(image_bytes).decode()
-    llm = ChatOllama(
-        model=settings.ollama_vision_model,
-        base_url=settings.ollama_base_url,
+    llm = ChatOpenAI(
+        model=settings.openai_vision_model,
+        base_url=settings.openai_base_url,
+        api_key=settings.openai_api_key,
     )
     message = HumanMessage(
         content=[

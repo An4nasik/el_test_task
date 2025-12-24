@@ -1,10 +1,13 @@
 from pathlib import Path
 
 from langchain_community.vectorstores import FAISS
-from langchain_ollama import OllamaEmbeddings
+from langchain_openai import OpenAIEmbeddings
 
 from src.core.config import settings
 from src.knowledge.vectorizer import build_vectorstore
+
+INDEX_FILE_NAME = "index.faiss"
+METADATA_FILE_NAME = "index.pkl"
 
 _vectorstore: FAISS | None = None
 
@@ -14,10 +17,15 @@ def load_vectorstore() -> FAISS:
     if _vectorstore:
         return _vectorstore
     path = Path(settings.vectorstore_path)
-    embeddings = OllamaEmbeddings(model=settings.ollama_embedding_model, base_url=settings.ollama_base_url)
-    if path.exists():
+    embeddings = OpenAIEmbeddings(
+        model=settings.openai_embedding_model,
+        api_key=settings.openai_api_key,
+        base_url=settings.openai_base_url,
+    )
+    index_file = path / INDEX_FILE_NAME
+    metadata_file = path / METADATA_FILE_NAME
+    if path.exists() and index_file.exists() and metadata_file.exists():
         _vectorstore = FAISS.load_local(path, embeddings, allow_dangerous_deserialization=True)
     else:
         _vectorstore = build_vectorstore()
     return _vectorstore
-

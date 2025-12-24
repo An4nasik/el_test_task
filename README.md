@@ -1,10 +1,10 @@
 # AI Book Consultant
 
-Простой RAG-консультант по книге с FastAPI, LangChain, Ollama Cloud, FastStream (RabbitMQ), PostgreSQL и Telegram-ботом.
+Простой RAG-консультант по книге с FastAPI, LangChain, OpenAI, FastStream (RabbitMQ), PostgreSQL и Telegram-ботом.
 
 ## Стек
 - Python 3.11, FastAPI
-- LangChain + Ollama Cloud (gpt-oss:120b-cloud, qwen3-vl:2b-cloud)
+- LangChain + OpenAI (gpt-4o-mini + text-embedding-3-small)
 - FAISS для векторного поиска
 - FastStream + RabbitMQ
 - PostgreSQL + SQLAlchemy (async)
@@ -29,7 +29,7 @@ docker compose up --build
 ## Переменные окружения (.env)
 Смотри `.env.example`. Важные:
 - `API_AUTH_KEY` — ключ для X-API-Key
-- `OLLAMA_API_KEY` — ключ Ollama Cloud
+- `OPENAI_API_KEY` — ключ OpenAI
 - `TELEGRAM_BOT_TOKEN` — токен бота
 - `RABBITMQ_URL`, `DATABASE_URL` при необходимости, иначе берутся из host/port
 
@@ -49,4 +49,3 @@ docker compose up --build
 
 ## Логи
 Используется structlog, stdout.
-
