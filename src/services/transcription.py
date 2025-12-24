@@ -1,13 +1,16 @@
+from functools import lru_cache
+
 import whisper
 
 from src.core.config import settings
 
-_whisper_model = None
+
+@lru_cache(maxsize=1)
+def _get_whisper_model():
+    return whisper.load_model(settings.whisper_model)
 
 
 def transcribe_audio(file_path: str) -> str:
-    global _whisper_model
-    if _whisper_model is None:
-        _whisper_model = whisper.load_model(settings.whisper_model)
-    result = _whisper_model.transcribe(file_path)
+    model = _get_whisper_model()
+    result = model.transcribe(file_path)
     return result.get("text", "").strip()

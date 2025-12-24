@@ -11,13 +11,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY pyproject.toml /app/
-RUN pip install --no-cache-dir uv
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir uv \
+    && uv pip install --system --no-cache-dir -r requirements.txt
 
+COPY pyproject.toml /app/
 COPY src /app/src
 COPY data /app/data
 
-RUN uv pip install --system --no-cache-dir .
+RUN uv pip install --system --no-cache-dir --no-deps -e .
 
 EXPOSE 8000
 CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

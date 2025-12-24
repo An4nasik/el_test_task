@@ -9,6 +9,7 @@ from src.knowledge.loader import load_vectorstore
 from src.services.llm import get_llm
 from src.services.memory import get_history
 
+# Dialog history is preserved through MessagesPlaceholder and RunnableWithMessageHistory.
 _prompt = ChatPromptTemplate.from_messages([
     ("system", "Ты — доброжелательный литературный консультант. Отвечай кратко, опираясь на контекст."),
     MessagesPlaceholder(variable_name="history"),

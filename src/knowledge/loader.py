@@ -6,6 +6,9 @@ from langchain_openai import OpenAIEmbeddings
 from src.core.config import settings
 from src.knowledge.vectorizer import build_vectorstore
 
+INDEX_FILE_NAME = "index.faiss"
+METADATA_FILE_NAME = "index.pkl"
+
 _vectorstore: FAISS | None = None
 
 
@@ -19,9 +22,9 @@ def load_vectorstore() -> FAISS:
         api_key=settings.openai_api_key,
         base_url=settings.openai_base_url,
     )
-    index_file = path / "index.faiss"
-    metadata_file = path / "index.pkl"
-    if index_file.exists() and metadata_file.exists():
+    index_file = path / INDEX_FILE_NAME
+    metadata_file = path / METADATA_FILE_NAME
+    if path.exists() and index_file.exists() and metadata_file.exists():
         _vectorstore = FAISS.load_local(path, embeddings, allow_dangerous_deserialization=True)
     else:
         _vectorstore = build_vectorstore()
