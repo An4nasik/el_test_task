@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import tempfile
 from pathlib import Path
@@ -11,7 +12,7 @@ from src.core.dependencies import get_db
 from src.db import crud
 from src.services.memory import clear_history
 from src.services.transcription import transcribe_audio
-from src.services.vision import describe_image
+from src.services.vision import describe_image_async
 
 router = APIRouter(prefix="/api/v1", dependencies=[Depends(verify_api_key)])
 
@@ -25,11 +26,11 @@ def _extract_image(image_base64: str | None) -> bytes | None:
         raise HTTPException(status_code=400, detail="Invalid image base64") from exc
 
 
-def _maybe_describe_image(image_base64: str | None) -> str:
+async def _maybe_describe_image(image_base64: str | None) -> str:
     image_bytes = _extract_image(image_base64)
     if not image_bytes:
         return ""
-    return describe_image(image_bytes)
+    return await describe_image_async(image_bytes)
 
 
 def _combine_context(text: str, image_desc: str) -> str:
@@ -40,7 +41,7 @@ def _combine_context(text: str, image_desc: str) -> str:
 
 @router.post("/ask/text", response_model=AIResponse)
 async def ask_text(payload: TextRequest, session=Depends(get_db)) -> AIResponse:  # noqa: B008
-    image_desc = _maybe_describe_image(payload.image_base64)
+    image_desc = await _maybe_describe_image(payload.image_base64)
     question = _combine_context(payload.text, image_desc)
 
     answer = await rpc_text({"user_id": payload.user_id, "text": question, "image_desc": image_desc})
@@ -61,10 +62,11 @@ async def ask_audio(payload: AudioRequest, session=Depends(get_db)) -> AIRespons
         tmp.write(audio_bytes)
         audio_path = tmp.name
 
-    text = transcribe_audio(audio_path)
+    # Run synchronous transcription in a thread pool to avoid blocking
+    text = await asyncio.to_thread(transcribe_audio, audio_path)
     Path(audio_path).unlink(missing_ok=True)
 
-    image_desc = _maybe_describe_image(payload.image_base64)
+    image_desc = await _maybe_describe_image(payload.image_base64)
     question = _combine_context(text, image_desc)
 
     answer = await rpc_audio({"user_id": payload.user_id, "text": question, "image_desc": image_desc})
